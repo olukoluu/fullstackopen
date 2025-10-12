@@ -3,12 +3,16 @@ import Persons from "./components/Persons";
 import PersonForm from "./components/PersonForm";
 import Filter from "./components/Filter";
 import personsService from "./services/persons";
+import Notification from "./components/Notification";
+import Error from "./components/Error";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
+  const [notification, setNotification] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personsService
@@ -48,6 +52,10 @@ const App = () => {
               );
               setNewName("");
               setNewNumber("");
+              setNotification(`Updated ${returnedPerson.name}`);
+              setTimeout(() => {
+                setNotification(null);
+              }, 5000);
             });
         }
       }
@@ -57,6 +65,10 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName("");
         setNewNumber("");
+        setNotification(`Added ${returnedPerson.name}`);
+        setTimeout(() => {
+          setNotification(null);
+        }, 5000);
       });
     }
   };
@@ -65,7 +77,15 @@ const App = () => {
     const person = persons.find((p) => p.id === id);
 
     if (window.confirm(`Delete ${person.name} ?`)) {
-      personsService.dlt(id);
+      personsService.dlt(id)
+      .catch(error => {
+        setErrorMessage(
+          `Note '${note.content}' was already removed from server`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
       setPersons(persons.filter((persons) => persons.id !== id));
     }
   };
@@ -85,6 +105,8 @@ const App = () => {
         newName={newName}
         newNumber={newNumber}
       />
+      <Notification message={notification} />
+      <Error message={errorMessage} />
       <h2>Numbers</h2>
       <Persons persons={filteredPerson} handleDelete={handleDelete} />
     </div>
