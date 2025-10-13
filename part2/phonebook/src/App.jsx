@@ -28,9 +28,9 @@ const App = () => {
     setNewNumber(event.target.value);
   };
 
-  const filteredPerson = persons.filter((person) =>
-    person.name?.toLowerCase().includes(newFilter.toLowerCase())
-  );
+  const filteredPerson = persons.length > 0 ? persons.filter((person) =>
+    person.name.toLowerCase().includes(newFilter.toLowerCase())
+  ): [];
 
   const handleSubmit = (event) => {
     event.preventDefault();
